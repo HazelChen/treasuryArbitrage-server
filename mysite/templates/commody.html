@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Product Detail</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+	<!--link rel="stylesheet/less" href="less/bootstrap.less" type="text/css" /-->
+	<!--link rel="stylesheet/less" href="less/responsive.less" type="text/css" /-->
+	<!--script src="js/less-1.3.3.min.js"></script-->
+	<!--append ‘#!watch’ to the browser URL, then refresh the page. -->
+	
+	<link href="/site_medias/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/site_medias/bootstrap/css/style.css" rel="stylesheet">
+
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+  <![endif]-->
+
+	<script type="text/javascript" src="/site_medias/bootstrap/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/site_medias/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/site_medias/bootstrap/js/scripts.js"></script>
+    <script type="application/javascript" src="/site_medias/awesomechart.js"> </script>
+	<script src="/site_medias/bootstrap/Chart/Chart.js"></script>
+
+</head>
+
+<body>
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-1 column">
+		</div>
+		<div class="col-md-10 column">
+			<div class="page-header">
+				<h1>
+					{{name}} 1 <small>Data Analysis</small>
+				</h1>
+			</div>
+		</div>
+		<div class="col-md-1 column">
+		</div>
+	</div>
+    
+	<div class="row clearfix">
+		<div class="col-md-1 column">
+		</div>
+	
+	
+		<div class="col-md-3 column">
+			<img  src="{{img}}" class="img-thumbnail">
+        <h2>Rank</h2>
+            <p>
+             {% for item in rank %}
+                                {{item}}<br></br>
+                            {% endfor %}
+            
+            </p>        
+		</div>
+        <div class="col-md-5 column">
+            <h2>Description</h2>
+            <p>{{description}}</p>
+            <h2>Feature</h2>
+            <p>
+            <ul>
+             {% for item in feature %}
+                             <li>   ·{{item}}</li>
+                            {% endfor %}
+                            
+           </ul> 
+		</div>
+		<div class="col-md-3 column">
+           
+            <canvas id="chartCanvas11" width="200" height="200">
+            </canvas>
+            <p>Total：{{total}}</p>
+            <p>Average：{{average}}</p> 
+		
+        </div>
+		
+	</div>
+    
+	<div class="row clearfix">
+		<div class="col-md-1 column">
+		</div>
+		<div class="col-md-10 column">
+       	  <h2>Comments Analysis</h2>
+            <div id="review_trend" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+            <div id="review_column" style="min-width:310px; height: 400px; margin: 0 auto"></div>
+		</div>
+		<div class="col-md-1 column">
+		</div>
+	</div>
+    
+    <div class="row clearfix">
+		<div class="col-md-1 column">
+		</div>
+		<div class="col-md-10 column">
+       	  <h2>Price Analysis</h2>
+            <div class="col-md-5 column">
+            	<div id="price_line" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+            </div>
+          	<div class="col-md-1 column">
+            </div>
+            <div class="col-md-5 column">
+                <div id="relation"></div>
+            </div>
+            <div class="col-md-1 column">
+            </div>
+		</div>
+		<div class="col-md-1 column">
+		</div>
+	</div>
+</div>
+
+
+    <script src="/site_medias/bootstrap/js/highcharts.js"></script>
+    <script src="/site_medias/bootstrap/js/modules/exporting.js"></script>
+
+</body>
+
+ <script>
+ var chart11 = new AwesomeChart('chartCanvas11');
+            chart11.chartType = "horizontal bars";
+            chart11.title = "Star Review";
+            chart11.data = {{data}}
+            chart11.labels = ['1☆','2☆','3☆','4☆','5☆'];
+            chart11.colors = ['#006CFF', '#FF6600', '#34A038', '#945D59', '#93BBF4', '#F493B8'];
+            chart11.randomColors = true;
+            chart11.animate = true;
+            chart11.animationFrames = 30;
+            chart11.draw();
+ </script>
+ 
+ 
+ <script>
+$(function () {
+ var xList = new Array();
+    {% for item in price_date %}
+                            xList.push('{{item}}')
+                            {% endfor %} 
+        $('#price_line').highcharts({
+            title: {
+                text: 'Price Trend',
+                x: -20 //center
+            },
+            subtitle: {
+                text: '{{name}}',
+                x: -20
+            },
+            xAxis: {
+                categories: xList
+            },
+            yAxis: {
+                title: {
+                    text: 'Dollar ($)'
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+            enabled: false,
+            formatter: function() {
+                return '<b>'+ this.series.name +'</b><br/>'+this.x +': '+ this.y +'$';
+            }
+        },
+            plotOptions: {
+            line: {
+                dataLabels: {
+                    enabled: true
+                },
+                enableMouseTracking: false
+            }
+        },
+            series: [{
+                name: 'Max',
+                data: {{max}}
+            }, {
+                name: 'Average',
+                data: {{avg}}
+            }, {
+                name: 'Min',
+                data: {{min}}
+            }]
+        });
+    }
+    
+    
+    
+    );
+    
+		
+	
+	</script>
+  
+    <script>
+$(function () {
+  var xList = new Array();
+    {% for item in review_data_date %}
+                                xList.push('{{item}}');
+                            {% endfor %} 
+        $('#review_trend').highcharts({
+            title: {
+                text: 'Review Trend',
+                x: -20 //center
+            },
+            subtitle: {
+                text: '{{name}}',
+                x: -20
+            },
+            xAxis: {
+                categories: xList,
+                labels: {
+                    rotation: -45,
+                    align: 'right',
+                    style: {
+                        fontSize: '13px',
+                        fontFamily: 'Verdana, sans-serif'
+                    }
+                }
+           },
+            yAxis: {
+                title: {
+                    text: 'review count' 
+                },
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            tooltip: {
+            enabled: false,
+            formatter: function() {
+                return '<b>'+ this.series.name +'</b><br/>'+this.x +': '+ this.y +'$';
+            }
+        },
+            plotOptions: {
+            line: {
+                dataLabels: {
+                    enabled: true
+                },
+                enableMouseTracking: false
+            }
+        },
+            series: [{
+                name: 'Review Count',
+                data: {{review_data_count}}
+            }]
+        });
+        
+        $('#review_column').highcharts({
+            chart: {
+                type: 'column',
+                margin: [ 50, 50, 100, 80]
+            },
+            title: {
+                text: 'Review Column'
+            },
+            xAxis: {
+                categories: xList,
+                labels: {
+                    rotation: -45,
+                    align: 'right',
+                    style: {
+                        fontSize: '13px',
+                        fontFamily: 'Verdana, sans-serif'
+                    }
+                }
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Review Count'
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                pointFormat: 'Review of Each Month',
+            },
+            series: [{
+                name: 'Review Count',
+                data: {{review_data_each_count}},
+                dataLabels: {
+                    enabled: true,
+                   
+                }
+            }]
+        });
+    }
+    
+    
+    
+    );
+    
+    
+      $('#relation').highcharts({                                                             
+        chart: {                                                                             
+            type: 'scatter',                                                                 
+            zoomType: 'xy'                                                                   
+        },                                                                                   
+        title: {                                                                             
+            text: 'The RelationShip Between Price and Review'                        
+        },                                                                                   
+        subtitle: {                                                                          
+            text: 'Source: trendata'                                                      
+        },                                                                                   
+        xAxis: {                                                                             
+            title: {                                                                         
+                enabled: true,                                                               
+                text: 'price ($)'                                                          
+            },                                                                               
+            startOnTick: true,                                                               
+            endOnTick: true,                                                                 
+            showLastLabel: true                                                              
+        },                                                                                   
+        yAxis: {                                                                             
+            title: {                                                                         
+                text: 'review '                                                          
+            }                                                                                
+        },                                                                                   
+        legend: {                                                                            
+            layout: 'vertical',                                                              
+            align: 'left',                                                                   
+            verticalAlign: 'top',                                                            
+            x: 100,                                                                          
+            y: 70,                                                                           
+            floating: true,                                                                  
+            backgroundColor: '#FFFFFF',                                                      
+            borderWidth: 1                                                                   
+        },                                                                                   
+        plotOptions: {                                                                       
+            scatter: {                                                                       
+                marker: {                                                                    
+                    radius: 5,                                                               
+                    states: {                                                                
+                        hover: {                                                             
+                            enabled: true,                                                   
+                            lineColor: 'rgb(100,100,100)'                                    
+                        }                                                                    
+                    }                                                                        
+                },                                                                           
+                states: {                                                                    
+                    hover: {                                                                 
+                        marker: {                                                            
+                            enabled: false                                                   
+                        }                                                                    
+                    }                                                                        
+                },                                                                           
+                tooltip: {                                                                   
+                    headerFormat: '<b>{series.name}</b><br>',                                
+                    pointFormat: '{point.x}$ , {point.y} '                                
+                }                                                                            
+            }                                                                                
+        },                                                                                   
+        series: [{                                                                           
+            name: 'Price & review',                                                                  
+            color: 'rgba(223, 83, 83, .5)',                                                  
+            data:  {{relation}}
+                                                                                             
+        }]                                                                                   
+    }); 
+    </script>
+    
+    
+</html>

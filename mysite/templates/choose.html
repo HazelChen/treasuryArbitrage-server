@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Choose your Product</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+	<!--link rel="stylesheet/less" href="less/bootstrap.less" type="text/css" /-->
+	<!--link rel="stylesheet/less" href="less/responsive.less" type="text/css" /-->
+	<!--script src="js/less-1.3.3.min.js"></script-->
+	<!--append ‘#!watch’ to the browser URL, then refresh the page. -->
+	
+	<link href="/site_medias/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="/site_medias/bootstrap/css/style.css" rel="stylesheet">
+
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+  <![endif]-->
+
+  <!-- Fav and touch icons -->
+  	<script type="text/javascript" src="/site_medias/bootstrap/js/json2.js"></script>
+	<script type="text/javascript" src="/site_medias/bootstrap/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/site_medias/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/site_medias/bootstrap/js/scripts.js"></script>
+     <script src="/site_medias/bootstrap/js/highcharts.js"></script>
+    <script src="/site_medias/bootstrap/js/modules/exporting.js"></script>
+</head>
+
+<body>
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+			<div class="row clearfix">
+				<div class="col-md-1 column">
+				</div>
+				<div class="col-md-10 column">
+					<div class="page-header">
+						<h1>
+							Please Choose a Product
+						</h1>
+					</div>
+                    
+					<div class="row clearfix">
+                        <form action="">
+						<div class="col-md-6 column">
+                        	一级分类
+                             <select id="first" onclick="changesecond(this.value)"> 
+                            {% for item in first %}
+                                <option value={{item}} > 
+                                {{item}}
+                            </option> 
+                            {% endfor %}
+          
+                            </select> 
+                            <br></br>
+						二级分类  
+							 <select id="second" name="second" onclick="changethird(this.value)"> 
+                {% for item in second %}
+                                <option value={{item}} > 
+                                {{item}}
+                            </option> 
+                            {% endfor %}
+                            </select> 
+                            <br></br>
+                            三级分类
+							 <select id="third"  name="third"> 
+              {% for item in third %}
+                                <option value={{item}} > 
+                                {{item}}
+                            </option> 
+                            {% endfor %}
+            </select> 
+            <br></br>
+            <button type="button" class="btn btn-primary" id="searchBtn" onclick="getproduct('comment')">查询</button>
+            <div id="waiting"></div>
+                        </div>
+                        
+                        <div id = "price_dis" class="col-md-8 column"> 
+                        	
+                         </div>
+                         
+                     
+                        
+						</form>
+					</div>
+                    <br>
+					<ul class="nav nav-tabs">
+						<li id="comment">    
+							<a href="#" onclick="getproduct('comment')">按评论数排名</a>
+						</li>
+						<li id="star">
+							<a href="#" onclick="getproduct('star')">按评分排名</a>
+						</li >
+						<li id="recommand"><!--被激活就写active，不能点则写disabled，可以点就什么都不写-->
+							<a href="#"onclick="getproduct('recommand')">推荐产品</a>
+						</li>
+                        
+					</ul>
+                    <br>
+					<table class="table" id="product">
+             
+						
+                        
+					</table>
+				</div>
+				<div class="col-md-1 column">
+				</div>
+			</div{
+		</div>
+	</div>
+</div>
+</body>
+<script>
+  function changesecond(firstvalue){ 
+    $.ajax({   
+        type: "GET",   
+        url: "/getsecond?first="+firstvalue,   
+        dataType:   "json",   
+        success: function(json){   
+            $("#second").show(); 
+            var secondSelect = document.getElementById("second");   
+            // 清空   
+            for ( var i=secondSelect.options.length-1; i>-1; i-- ){   
+                secondSelect.options[i] = null;   
+            }   
+            
+            // 创建select选项   
+            for(i=0;i<json.length;i++){   
+                secondSelect.options[i] = new Option();   
+                secondSelect.options[i].text = json[i].label;   
+                secondSelect.options[i].value = json[i].text;   
+                if (i==0){
+                    changethird(json[i].label)
+                }
+            }
+        }    
+    })  
+  }   
+    function getproduct(type){
+       document.getElementById("comment").className = ""; 
+       document.getElementById("star").className = ""; 
+       document.getElementById("recommand").className = ""; 
+       document.getElementById(type).className = "active"; 
+       var thirdselect = document.getElementById("third").value; 
+       var secondselect = document.getElementById("second").value; 
+       var firstselect = document.getElementById("first").value;     
+        searchWaiting()
+       
+        $.ajax({   
+        type: "GET",   
+        url: "/getproduct?third="+thirdselect+"&second="+secondselect+"&first="+firstselect+"&type="+type,   
+        dataType:   "json",   
+        success: function(json){   
+            var content="<table class=\"table\"><thead><tr width=10%><th>排名</th><th width=40%>商品名称</th><th width=15%>商品图片</th><th width=10%>当前最低价</th><th width=10%>评论数</th><th width=10%>评分统计</th></tr></thead><tbody>";
+            for(i=0;i<json.length-2;i++){   
+                content=content+"<tr><td>"+(i+1)+"</td><td><a href=\"/getdetail?ASIN="+json[i].asin+"\" target=\"_blank\">"+json[i].name+"</td><td><img style=\"width:100px;height:100px\" src=\""+json[i].img;
+                content = content+"\"</img></td><td>"+json[i].price+"$</td><td>"+json[i].review_count+"</td><td>";
+                var stars = json[i].star;
+                for (j=0;j<stars-1  ;j++){
+                    content = content+"☆";
+                }
+                content  = content+"<br></br>"+stars
+                content = content+"</td> </tr></tbody>";
+            }   
+            content=content+"</table>"
+            document.getElementById("product").innerHTML=content;
+            endWaiting()
+            
+            var xList =json[json.length-2];
+            var dist = json[json.length-1];
+            
+         
+             $('#price_dis').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: '该分类价格分布'
+        },
+        subtitle: {
+            text: 'Source: trendata'
+        },
+        xAxis: {
+            categories: xList
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'price ($)'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Price',
+            data: dist
+
+        }]
+    });            
+        }    
+    })   
+      
+    }
+    function changethird(secondvalue){ 
+    secondvalue = secondvalue.replace('&','. $')
+    
+    $.ajax({   
+        type: "GET",   
+        url: "/getthird?second="+secondvalue,   
+        dataType:   "json",   
+        success: function(json){   
+            $("#second").show(); 
+            var thirdSelect = document.getElementById("third");   
+               
+            // 清空   
+            for ( var i=thirdSelect.options.length-1; i>-1; i-- ){   
+                thirdSelect[i] = null;   
+            }   
+   
+            // 创建select选项   
+            for(i=0;i<json.length;i++){   
+                thirdSelect.options[i] = new Option();   
+                thirdSelect.options[i].text = json[i].label;   
+                thirdSelect.options[i].value = json[i].text;   
+            } 
+        }    
+    })   
+   }
+/**
+	*已经发送登录请求，等等服务器响应过程中的一些处理（包括禁用登录按钮，更换登录按钮背景图片，切换提示信息等等）
+	*/
+	function searchWaiting(){
+		$("#searchBtn").attr("disabled",true);
+		var waitingText = "正在查询，请稍候";
+		$("#waiting").html(waitingText);
+	}   
+    function endWaiting(){
+    $("#searchBtn").attr("disabled",false);
+		var waitingText = "";
+		$("#waiting").html(waitingText);
+    }
+</script>
+</html>

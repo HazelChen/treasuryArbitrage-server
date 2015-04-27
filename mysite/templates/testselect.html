@@ -1,0 +1,38 @@
+<select name="city_id" id="city_id" onChange="getFacilityOptions(this.value)">   
+{% if city_list %}   
+{% for city in city_list %}   
+<option value="{{city.id}}">{{city.name}}</option>   
+{% endfor %}   
+{% endif %}   
+</select>   
+<select name="facility_id" id="facility_id" style="display:none">   
+</select>   
+
+
+<script>
+function getFacilityOptions(city_id){   
+    $.ajax({   
+        type: "GET",   
+        url: "/raw/facility_list/"+city_id+"/",   
+        dataType:   "json",   
+        success: function(json){   
+            // 显示设施   
+            $("#facility_id").show(); 
+            var facilitySelect = document.getElementById("facility_id");   
+               
+   
+            // 清空   
+            for ( var i=facilitySelect.options.length-1; i>-1; i– ){   
+                facilitySelect[i] = null;   
+            }   
+   
+            // 创建select选项   
+            for(i=0;i<json.length;i++){   
+                facilitySelect.options[i] = new Option();   
+                facilitySelect.options[i].text = json[i].label;   
+                facilitySelect.options[i].value = json[i].text;   
+            }   
+        }    
+    })   
+}   
+</script>

@@ -1,0 +1,126 @@
+1.登录
+/login?username=&password=
+
+json Mret {
+    int result = 0;     ／1:成功 0:失败
+}
+
+2.注册
+/regist?username=&password=
+
+json MUser {
+   String username;  用户名 如果为空代表用户名重复 注册失败
+   String password;  密码
+}
+
+3.下线
+/logout?username=
+
+json Mret {
+    int result = 0;     ／1:成功 0:失败
+}
+
+4.修改密码
+/changePaswd?username=&oldPassword=&newPassword=
+
+json Mret {
+    int result = 0;     ／1:成功 0:失败
+}
+
+5.历史交易记录
+/history?username=
+json Mret [ { 	String more_contract ;多头协议名称
+				double more_price ;  多头价格
+                String blank_contract;  空头协议名称
+                double blank_price;  空头价格
+                long time ;    时间
+                double bond;  保证金
+                int hand;   手数	
+                int state;  成交状态
+                int id;   记录的编号（唯一）
+                }
+                , ...
+                ]
+
+6.下单
+/order?username=&more_contract=&black_contract=&hand=&bond=
+
+Json Ret {
+    int result = 0;     ／1:成功 0:失败
+}
+
+
+
+7.取消下单
+/cancelorder?username=&id=
+
+Json Ret {
+    int result = 0;     ／1:成功 0:失败
+}
+
+
+8.持仓状况
+/repository?username=
+
+json Mret [ { 	String more_contract ;多头协议名称
+				double more_price ;  多头价格
+                String blank_contract;  空头协议名称
+                double blank_price;  空头价格
+                long time ;    时间
+                double bond;  保证金
+                int hand;   手数	
+                int state;  成交状态
+                int id;   记录的编号（唯一）
+                }
+                , ...
+                ]
+
+9.资金状况
+/funds?username=
+
+
+10.平仓
+/trade?username=&Repo_ID=
+
+
+11.期货行情
+/detail?username=
+
+Json Ret [
+    {
+   	int ID ;
+	String CODE             期货代码
+    String DATE             日期	 格式2014.10.01
+    String TIME             时间 格式23：01：01
+    RT_PRE_CLOSE        昨收
+    RT_OPEN             开盘
+    RT_HIGH             最高
+    RT_LOW              最低
+    RT_LAST              现价
+    RT_LAST_AMT        现额
+    RT_LAST_VOL         现量
+    RT_LATEST           最新成交价
+    RT_VOL              成交量
+    RT_AMT              成交额
+    RT_CHG              涨跌
+    RT_PCT_CHG         涨跌幅
+    RT_HIGH_LIMIT       涨停价
+    RT_LOW_LIMIT        跌停价
+    RT_SWING            振幅
+    RT_VWAP             均价
+    RT_UPWARD_VOL     外盘
+    RT_DOWNWARD_VOL 内盘
+    RT_VOL_RATIO         量比
+    RT_TURN             换手率
+    RT_PRE_SETTLE        前结算价
+    RT_SETTLE            结算价
+    RT_ASK1              卖1价
+    RT_BID1              买1价
+    RT_BSIZE1             买1量
+RT_ASIZE1             卖1量
+}
+]
+
+
+12.历史行情
+/olddetail?username=

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bootstrap 3, from LayoutIt!</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+	<!--link rel="stylesheet/less" href="less/bootstrap.less" type="text/css" /-->
+	<!--link rel="stylesheet/less" href="less/responsive.less" type="text/css" /-->
+	<!--script src="js/less-1.3.3.min.js"></script-->
+	<!--append ‘#!watch’ to the browser URL, then refresh the page. -->
+	<link href="/site_medias/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+  <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+  <![endif]-->
+
+  <!-- Fav and touch icons -->
+  	<script type="text/javascript" src="/site_medias/bootstrap/js/json2.js"></script>
+	<script type="text/javascript" src="/site_medias/bootstrap/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/site_medias/bootstrap/js/bootstrap.min.js"></script>
+	<script type="text/javascript" src="/site_medias/bootstrap/js/scripts.js"></script>
+</head>
+
+<body>
+<div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+            <div id="commody_count"></div>
+		</div>
+        
+        </div>
+        <div class="col-md-12 column">
+        <div id="review_count">
+        </div>
+         <div class="col-md-12 column">
+        <div id="avg">
+        </div>
+	</div>
+</div>
+  <script src="/site_medias/bootstrap/js/highcharts.js"></script>
+    <script src="/site_medias/bootstrap/js/modules/exporting.js"></script>
+</body>
+<script>
+$(function () {
+    var commody_data = new Array();
+    var review_data=new Array();
+     {% for item in commody_count %}
+                      commody_data.push(['{{item.name}}',{{item.commody_count}}]);
+                      
+     {% endfor %}
+       {% for item in review_count %}
+                      review_data.push(['{{item.name}}',{{item.review_count}}]);
+                      
+     {% endfor %}
+    $('#commody_count').highcharts({
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false
+        },
+        title: {
+            text: '各分类商品数量所占比率'
+        },
+        tooltip: {
+    	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Commody Share',
+            data: commody_data
+        }]
+    });
+     $('#review_count').highcharts({
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false
+        },
+        title: {
+            text: '各分类评论总数所占比率'
+        },
+        tooltip: {
+    	    pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    color: '#000000',
+                    connectorColor: '#000000',
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                }
+            }
+        },
+        series: [{
+            type: 'pie',
+            name: 'Review Share',
+            data: review_data
+        }]
+    });
+    var xList = new Array();
+      {% for item in cat %}
+                        xList.push('{{item.name}}');
+     {% endfor %}
+    
+    $('#avg').highcharts({
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Average Review Of Each Product'
+        },
+        subtitle: {
+            text: 'data from trendata'
+        },
+        xAxis: {
+            categories: xList
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'review count'
+            }
+        },
+        tooltip: {
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'average review count',
+            data: {{avg_review}}
+
+        }
+        
+        ]
+    });
+});
+</script>
+</html>
